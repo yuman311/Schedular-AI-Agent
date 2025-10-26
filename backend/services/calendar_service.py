@@ -2,6 +2,7 @@ import os
 import pickle
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Any
+from pathlib import Path
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
@@ -21,15 +22,16 @@ class CalendarService:
     
     def load_credentials(self):
         """Load saved credentials from token file"""
-        if os.path.exists('token.pickle'):
-            with open('token.pickle', 'rb') as token:
+        token_path = Path(__file__).resolve().parent.parent / 'token.pickle'
+        if token_path.exists():
+            with open(token_path, 'rb') as token:
                 self.creds = pickle.load(token)
         
         if self.creds and self.creds.valid:
             self.service = build('calendar', 'v3', credentials=self.creds)
         elif self.creds and self.creds.expired and self.creds.refresh_token:
             self.creds.refresh(Request())
-            with open('token.pickle', 'wb') as token:
+            with open(token_path, 'wb') as token:
                 pickle.dump(self.creds, token)
             self.service = build('calendar', 'v3', credentials=self.creds)
     
@@ -75,7 +77,9 @@ class CalendarService:
         flow.fetch_token(code=code)
         self.creds = flow.credentials
         
-        with open('token.pickle', 'wb') as token:
+        token_path = Path(__file__).resolve().parent.parent / 'token.pickle'
+        token_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(token_path, 'wb') as token:
             pickle.dump(self.creds, token)
         
         self.service = build('calendar', 'v3', credentials=self.creds)

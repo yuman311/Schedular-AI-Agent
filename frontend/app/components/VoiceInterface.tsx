@@ -5,9 +5,10 @@ import { useState, useRef, useEffect } from 'react';
 interface VoiceInterfaceProps {
   onSendMessage: (message: string) => void;
   isConnected: boolean;
+  onSpeakResponse?: (speak: (text: string) => void) => void;
 }
 
-export default function VoiceInterface({ onSendMessage, isConnected }: VoiceInterfaceProps) {
+export default function VoiceInterface({ onSendMessage, isConnected, onSpeakResponse }: VoiceInterfaceProps) {
   const [inputMessage, setInputMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -41,7 +42,11 @@ export default function VoiceInterface({ onSendMessage, isConnected }: VoiceInte
 
       synthesisRef.current = window.speechSynthesis;
     }
-  }, []);
+    
+    if (onSpeakResponse) {
+      onSpeakResponse(speak);
+    }
+  }, [onSpeakResponse]);
 
   const startListening = () => {
     if (recognitionRef.current && !isListening) {
@@ -81,7 +86,6 @@ export default function VoiceInterface({ onSendMessage, isConnected }: VoiceInte
   const handleSend = () => {
     if (inputMessage.trim() && isConnected) {
       onSendMessage(inputMessage);
-      speak(inputMessage);
       setInputMessage('');
     }
   };

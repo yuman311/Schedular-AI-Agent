@@ -13,6 +13,7 @@ export default function Home() {
   const [availableSlots, setAvailableSlots] = useState<Array<any>>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const clientId = useRef(`client-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+  const speakFunctionRef = useRef<((text: string) => void) | null>(null);
 
   useEffect(() => {
     checkAuthStatus();
@@ -51,6 +52,10 @@ export default function Home() {
           role: 'assistant',
           content: data.content
         }]);
+        
+        if (speakFunctionRef.current && data.content) {
+          speakFunctionRef.current(data.content);
+        }
         
         if (data.available_slots && data.available_slots.length > 0) {
           setAvailableSlots(data.available_slots);
@@ -154,6 +159,9 @@ export default function Home() {
                     <VoiceInterface 
                       onSendMessage={sendMessage}
                       isConnected={isConnected}
+                      onSpeakResponse={(speak) => {
+                        speakFunctionRef.current = speak;
+                      }}
                     />
                   </div>
                   
