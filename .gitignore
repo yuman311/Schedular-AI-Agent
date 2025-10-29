@@ -60,6 +60,7 @@ logs
 
 # Google Calendar credentials
 token.json
+token.pickle
 credentials.json
 
 # Test files
@@ -67,4 +68,4 @@ credentials.json
 .pytest_cache/
 .coverage
 htmlcov/
-backend/token.pickle
+
