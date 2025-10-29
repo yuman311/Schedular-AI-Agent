@@ -62,9 +62,9 @@ async def auth_callback(code: str):
     """Handle OAuth callback from Google"""
     try:
         calendar_service.handle_auth_callback(code)
-        return RedirectResponse(url="http://localhost:3000?auth=success")
+        return RedirectResponse(url="http://localhost:5000?auth=success")
     except Exception as e:
-        return RedirectResponse(url=f"http://localhost:3000?auth=error&message={str(e)}")
+        return RedirectResponse(url=f"http://localhost:5000?auth=error&message={str(e)}")
 
 
 @app.get("/auth/status")

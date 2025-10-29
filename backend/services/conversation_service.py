@@ -6,14 +6,17 @@ from openai import OpenAI
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
 import re
-
 from models.schemas import ConversationState, Message, MessageRole
+from openai import AsyncOpenAI
 
 
 class ConversationService:
     def __init__(self, calendar_service):
         self.calendar_service = calendar_service
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.client = OpenAI(
+        api_key= os.getenv("OPENAI_API_KEY"),
+        base_url= 'https://truefoundry.innovaccer.com/api/llm/api/inference/openai/'
+)
         self.conversation_history: List[Dict[str, str]] = []
         self.state = ConversationState()
         
@@ -224,7 +227,7 @@ When the user confirms a time slot, use the create_event function.
         
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4-turbo-preview",
+                model="openai/gpt-4o",
                 messages=messages,
                 tools=self.tools,
                 tool_choice="auto"
@@ -257,7 +260,7 @@ When the user confirms a time slot, use the create_event function.
                         })
                         
                         second_response = self.client.chat.completions.create(
-                            model="gpt-4-turbo-preview",
+                            model="openai/gpt-4o",
                             messages=[
                                 {"role": "system", "content": self.system_prompt}
                             ] + self.conversation_history
@@ -281,7 +284,7 @@ When the user confirms a time slot, use the create_event function.
                         })
                         
                         second_response = self.client.chat.completions.create(
-                            model="gpt-4-turbo-preview",
+                            model="openai/gpt-4o",
                             messages=[
                                 {"role": "system", "content": self.system_prompt}
                             ] + self.conversation_history

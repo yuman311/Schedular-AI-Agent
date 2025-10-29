@@ -15,16 +15,7 @@ export default function Home() {
   const clientId = useRef(`client-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
   const speakFunctionRef = useRef<((text: string) => void) | null>(null);
 
-  useEffect(() => {
-    checkAuthStatus();
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('auth') === 'success') {
-      setIsAuthenticated(true);
-      window.history.replaceState({}, '', '/');
-    }
-  }, []);
-
+ 
   const checkAuthStatus = async () => {
     try {
       const response = await fetch('http://localhost:8000/auth/status');
@@ -105,6 +96,16 @@ export default function Home() {
     setMessages([]);
     setAvailableSlots([]);
   };
+
+ useEffect(() => {
+    checkAuthStatus();
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('auth') === 'success') {
+      setIsAuthenticated(true);
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

@@ -15,39 +15,7 @@ export default function VoiceInterface({ onSendMessage, isConnected, onSpeakResp
   const recognitionRef = useRef<any>(null);
   const synthesisRef = useRef<SpeechSynthesis | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = false;
-        recognitionRef.current.interimResults = false;
-        recognitionRef.current.lang = 'en-US';
-
-        recognitionRef.current.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          setInputMessage(transcript);
-          setIsListening(false);
-        };
-
-        recognitionRef.current.onerror = (event: any) => {
-          console.error('Speech recognition error:', event.error);
-          setIsListening(false);
-        };
-
-        recognitionRef.current.onend = () => {
-          setIsListening(false);
-        };
-      }
-
-      synthesisRef.current = window.speechSynthesis;
-    }
-    
-    if (onSpeakResponse) {
-      onSpeakResponse(speak);
-    }
-  }, [onSpeakResponse]);
-
+ 
   const startListening = () => {
     if (recognitionRef.current && !isListening) {
       try {
@@ -96,6 +64,38 @@ export default function VoiceInterface({ onSendMessage, isConnected, onSpeakResp
       handleSend();
     }
   };
+ useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = false;
+        recognitionRef.current.lang = 'en-US';
+
+        recognitionRef.current.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setInputMessage(transcript);
+          setIsListening(false);
+        };
+
+        recognitionRef.current.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+        };
+
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+        };
+      }
+
+      synthesisRef.current = window.speechSynthesis;
+    }
+    
+    if (onSpeakResponse) {
+      onSpeakResponse(speak);
+    }
+  }, [onSpeakResponse]);
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
